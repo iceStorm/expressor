@@ -1,2 +1,1 @@
-GET http://localhost:7502
-Access-Control-Allow-Origin: *
+GET http://localhost:7502/users

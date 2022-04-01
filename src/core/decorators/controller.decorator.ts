@@ -6,7 +6,7 @@ import { AppRoute } from "./http.decorator"
  * @param rootPath Router root path
  * @returns
  */
-export default function Router(rootPath: string) {
+export default function Controller(rootPath: string) {
     return function (target: any) {
         const routes = Reflect.getMetadata(DECORATOR_KEYS.ROUTES, target)
 

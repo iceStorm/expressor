@@ -13,7 +13,7 @@ export interface ModuleParams {
      * Optional list of controllers defined in this module which have to be
      * instantiated.
      */
-    routers?: Type<any>[]
+    controllers?: Type<any>[]
 
     imports?: Type<any>[]
 }
@@ -21,6 +21,7 @@ export interface ModuleParams {
 export default function Module(metadata?: ModuleParams): ClassDecorator {
     return function (target) {
         // pushing routers classes to the module's metadata
-        Reflect.defineMetadata(DECORATOR_KEYS.ROUTERS, metadata?.routers ?? [], target)
+        Reflect.defineMetadata(DECORATOR_KEYS.CONTROLLERS, metadata?.controllers ?? [], target)
+        Reflect.defineMetadata(DECORATOR_KEYS.MODULES, metadata?.imports ?? [], target)
     }
 }

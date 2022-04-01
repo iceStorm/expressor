@@ -1,7 +1,7 @@
 import Module from "src/core/decorators/module.decorator"
-import UserRouter from "./user.router"
+import UserController from "./user.controller"
 
 @Module({
-    routers: [UserRouter],
+    controllers: [UserController],
 })
 export default class UserModule {}

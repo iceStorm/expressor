@@ -1,9 +1,9 @@
 import { Request, Response } from "express"
-import { Router } from "src/core/decorators"
+import { Controller as Controller } from "src/core/decorators"
 import { Get } from "src/core/decorators/http.decorator"
 
-@Router("/")
-export default class AppRouter {
+@Controller("/")
+export default class AppController {
     @Get("")
     index(req: Request, res: Response) {
         res.status(200).send("Ok")

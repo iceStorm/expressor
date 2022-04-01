@@ -1,10 +1,12 @@
 import { Module } from "src/core/decorators"
-import UserRouter from "src/modules/user/user.router"
-import AppRouter from "./app.router"
+import UserController from "src/modules/user/user.controller"
+import UserModule from "src/modules/user/user.module"
+import AppController from "./app.controller"
 import AppService from "./app.service"
 
 @Module({
+    imports: [UserModule],
     providers: [AppService],
-    routers: [AppRouter, UserRouter],
+    controllers: [AppController],
 })
 export default class AppModule {}

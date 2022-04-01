@@ -1,7 +1,7 @@
 const DECORATOR_KEYS = {
     ROUTES: Symbol("ROUTES"),
-    ROUTERS: Symbol("ROUTERS"),
-    // ROUTER_CLASS_NAME: Symbol("ROUTER_CLASS_NAME"),
+    MODULES: Symbol("MODULES"),
+    CONTROLLERS: Symbol("CONTROLLERS"),
     ROOT_PATH: Symbol("ROOT_PATH"),
 }
 

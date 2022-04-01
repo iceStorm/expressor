@@ -15,22 +15,22 @@ function HTTPMethodDecoratorFactory(method: HTTPMethod) {
         return function (target, propertyKey, descriptor) {
             // getting the method's class (class type, not a string)
             const className = target.constructor
-            console.log(propertyKey, descriptor)
+            // console.log(propertyKey, descriptor)
 
             // getting the className's "ROUTES" metadata that holds routes
-            const routers: Array<AppRoute> = Reflect.hasMetadata(DECORATOR_KEYS.ROUTES, className)
+            const routes: Array<AppRoute> = Reflect.hasMetadata(DECORATOR_KEYS.ROUTES, className)
                 ? Reflect.getMetadata(DECORATOR_KEYS.ROUTES, className)
                 : []
 
             // pushing the new method decorator's to the className's ROUTES metadata
-            routers.push({
+            routes.push({
                 path: path,
                 httpMethod: method,
                 method: descriptor.value, // propertyKey is the function name being decorated
             })
 
             // re-assign the ROUTES metadata to the className
-            Reflect.defineMetadata(DECORATOR_KEYS.ROUTES, routers, className)
+            Reflect.defineMetadata(DECORATOR_KEYS.ROUTES, routes, className)
         }
     }
 }

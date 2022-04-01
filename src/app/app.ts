@@ -9,7 +9,6 @@ import AppModule from "src/app/app.module"
 import helmet from "helmet"
 import DECORATOR_KEYS from "src/core/decorators/constants"
 import { AppRoute, HTTPMethod } from "src/core/decorators/http.decorator"
-import { DecoratorFactory } from "src/core/decorators"
 
 export type AppConstructor = {
     port: number | undefined
@@ -76,45 +75,6 @@ export default class App {
     }
 
     /**
-     * Load routes from controllers.
-     */
-    private initializeRoutes() {
-        const rootModuleInstance = new this.rootModule()
-
-        // getting routers from the root module
-        let routerClasses = Reflect.getMetadata(DECORATOR_KEYS.ROUTERS, this.rootModule)
-
-        // getting routers from the root module's child modules's routers
-        // routerClasses += DecoratorFactory.getAllRouters(this.rootModule)
-
-        // for logging routes table
-        const routesMapTable: Array<{ path: string; function: string; method: HTTPMethod }> = []
-
-        routerClasses.forEach((routeClass: any) => {
-            const routerRootPath = Reflect.getMetadata(DECORATOR_KEYS.ROOT_PATH, routeClass)
-            const routerHandlers = Reflect.getMetadata(DECORATOR_KEYS.ROUTES, routeClass)
-
-            const router = express.Router()
-
-            routerHandlers.forEach((handler: AppRoute) => {
-                router[handler.httpMethod](handler.path, handler.method).bind(rootModuleInstance)
-                console.log(handler.method);
-
-                routesMapTable.push({
-                    path: handler.path,
-                    function: `${routeClass.name}.${handler.method.name}`,
-                    method: handler.httpMethod,
-                })
-            })
-
-            // apply router as middleware
-            this._instance.use(routerRootPath, router)
-        })
-
-        console.table(routesMapTable)
-    }
-
-    /**
      * Load middlewares.
      */
     private initializeMiddlewares() {
@@ -129,5 +89,60 @@ export default class App {
 
         this._instance.use(express.json()) // allowing server to receive json request format.
         this._instance.use(express.urlencoded({ extended: true }))
+    }
+
+    /**
+     * Load routes from controllers.
+     */
+    private initializeRoutes() {
+        // getting all modules in the application
+        const controllers = []
+        const modules = [this.rootModule]
+
+        // using traversal method
+        while (modules.length > 0) {
+            const firstModule = modules.shift()
+
+            const currentModuleControllers = Reflect.getMetadata(DECORATOR_KEYS.CONTROLLERS, firstModule)
+            if (currentModuleControllers && currentModuleControllers.length > 0) {
+                controllers.push(...currentModuleControllers)
+            }
+
+            const childModules = Reflect.getMetadata(DECORATOR_KEYS.MODULES, firstModule)
+
+            if (childModules && childModules.length > 0) {
+                modules.push(...childModules)
+            }
+        }
+
+        console.log(controllers)
+
+        // for logging routes table
+        const routesMapTable: Array<{ path: string; function: string; method: HTTPMethod }> = []
+        const rootModuleInstance = new this.rootModule()
+
+        // registering routers based on each controller
+        controllers.forEach((controller) => {
+            const routerRootPath = Reflect.getMetadata(DECORATOR_KEYS.ROOT_PATH, controller)
+            const routerHandlers = Reflect.getMetadata(DECORATOR_KEYS.ROUTES, controller)
+            const router = express.Router()
+
+            routerHandlers.forEach((handler: AppRoute) => {
+                // binding router handler method for specific path
+                router[handler.httpMethod](handler.path, handler.method).bind(rootModuleInstance)
+
+                routesMapTable.push({
+                    path: handler.path,
+                    function: `${controller.name}.${handler.method.name}`,
+                    method: handler.httpMethod,
+                })
+            })
+
+            // apply router as middleware
+            console.log(routerRootPath)
+            this._instance.use(routerRootPath, router)
+        })
+
+        console.table(routesMapTable)
     }
 }
