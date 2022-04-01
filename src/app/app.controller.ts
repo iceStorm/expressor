@@ -2,7 +2,7 @@ import { Request, Response } from "express"
 import { Controller as Controller } from "src/core/decorators"
 import { Get } from "src/core/decorators/http.decorator"
 
-@Controller("")
+@Controller("/")
 export default class AppController {
     @Get("/")
     index(req: Request, res: Response) {

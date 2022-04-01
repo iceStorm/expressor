@@ -4,7 +4,7 @@ import { Get, Post } from "src/core/decorators/http.decorator"
 
 @Controller("/users")
 export default class UserController {
-    @Get("")
+    @Get("/")
     users(req: Request, res: Response) {
         res.status(200).send("Users")
     }

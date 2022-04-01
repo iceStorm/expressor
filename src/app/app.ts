@@ -9,12 +9,19 @@ import AppModule from "src/app/app.module"
 import helmet from "helmet"
 import DECORATOR_KEYS from "src/core/decorators/constants"
 import { AppRoute, HTTPMethod } from "src/core/decorators/http.decorator"
-import UserModule from "src/modules/user/user.module"
 
 export type AppConstructor = {
     port: number | undefined
     controllers?: BaseController[]
     rootModule: AppModule
+}
+
+type RouteMapItem = {
+    router: string
+    path: string
+    controller: string
+    function: string
+    method: HTTPMethod
 }
 
 export default class App {
@@ -100,7 +107,7 @@ export default class App {
         const controllers = []
         const modules = [this.rootModule]
 
-        // using traversal method
+        // using traversal method to get all controllers
         while (modules.length > 0) {
             const firstModule = modules.shift()
 
@@ -110,43 +117,57 @@ export default class App {
             }
 
             const childModules = Reflect.getMetadata(DECORATOR_KEYS.MODULES, firstModule)
-
             if (childModules && childModules.length > 0) {
                 modules.push(...childModules)
             }
         }
 
-        console.info(controllers)
-
         // for logging routes table
-        const routesMapTable: Array<{ path: string; function: string; method: HTTPMethod }> = []
+        const routesMapTable: Array<RouteMapItem> = []
 
-        // registering routers based on each controller
-        for (let index = 0; index < controllers.length; index++) {
-            const controller = controllers[index]
-
+        controllers.forEach((controller) => {
+            // getting controller's metadata
             const routerRootPath = Reflect.getMetadata(DECORATOR_KEYS.ROOT_PATH, controller)
+
+            // getting router's handler methods
             const routerHandlers = Reflect.getMetadata(DECORATOR_KEYS.ROUTES, controller)
+
+            // each controller has its own router on the root path
             const router = express.Router()
 
-            for (let index = 0; index < routerHandlers.length; index++) {
-                const handler = routerHandlers[index] as AppRoute
-
+            routerHandlers.forEach((handler: AppRoute) => {
                 // binding router handler method for specific path
                 router[handler.httpMethod](handler.path, handler.method).bind(new controller())
 
                 routesMapTable.push({
-                    path: routerRootPath + '' + handler.path,
+                    router: routerRootPath,
+                    controller: controller.name,
+                    path: routerRootPath + "" + handler.path,
                     function: `${controller.name}.${handler.method.name}`,
                     method: handler.httpMethod,
                 })
-            }
+            })
 
             // apply router as middleware
-            console.log(routerRootPath)
             this._instance.use(routerRootPath, router)
-        }
+        })
 
+        console.info(controllers)
         console.table(routesMapTable)
+
+        // prevent duplicating router root path
+        this.checkDuplicatedRoutes(routesMapTable)
+    }
+
+    checkDuplicatedRoutes(routes: RouteMapItem[]) {
+        const routePaths = routes.map((route) => route.path)
+        const uniqueRoutePaths = new Set(...routePaths)
+
+        if (routes.length != uniqueRoutePaths.size) {
+            // const duplicatedRoutePaths = routePaths.filter((path) => {
+            //     return uniqueRoutePaths.
+            // })
+            // throw new Error(`Duplicated routes: `)
+        }
     }
 }
