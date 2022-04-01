@@ -1,16 +1,20 @@
 {
     "compilerOptions": {
         "target": "ESNext",
-        "module": "CommonJS",
-        "moduleResolution": "Node",
-        "esModuleInterop": true,
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "incremental": true,
         "strict": true,
+        "forceConsistentCasingInFileNames": true,
+        // "noEmit": true,
+        "esModuleInterop": true,
+        "module": "CommonJS",
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "incremental": true,
         "outDir": "dist",
-        "baseUrl": "./src/",
+        "baseUrl": "./",
         "paths": {}
     },
-    "include": ["src"],
+    "include": ["./src/**/*.ts"],
+    // "exclude": ["./node_modules"]
 }

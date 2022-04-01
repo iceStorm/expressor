@@ -1,0 +1,2 @@
+GET http://localhost:7502
+Access-Control-Allow-Origin: *

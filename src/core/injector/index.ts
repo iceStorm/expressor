@@ -1,12 +1,22 @@
 import "reflect-metadata"
 
 export type Provider = {
-    className: any
+    token: any
     instance: any
 }
 
-export const Injector = new (class {
+export const DIContainer = new (class {
     private providers: Provider[] = []
+
+    /**
+     * Putting a provider with unique token to the centralized DI Container.
+     */
+    put(token: string | symbol, value: any) {
+        this.providers.push({
+            token,
+            instance: value,
+        })
+    }
 
     /**
      * Getting the declared instance of the target class
@@ -17,7 +27,7 @@ export const Injector = new (class {
         const tokens = Reflect.getMetadata("design:paramtypes", target) || []
 
         // tokens are required dependencies
-        const injections = tokens.map((token: any) => Injector.resolve<any>(token))
+        const injections = tokens.map((token: any) => DIContainer.resolve<any>(token))
 
         // initialize instance
         return new target(...injections)

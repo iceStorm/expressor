@@ -1,4 +1,4 @@
-import { User } from "modules/user/user.model"
+import { User } from "src/modules/user/user.model"
 
 export default interface UserStore {
     /**

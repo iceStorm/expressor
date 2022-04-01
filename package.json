@@ -2,9 +2,9 @@
     "name": "typress",
     "version": "1.0.0",
     "description": "",
-    "main": "dist/index.js",
+    "main": "src/main.ts",
     "scripts": {
-        "start": "nodemon src/index.ts",
+        "start": "NODE_PATH=./ nodemon ./src/main.ts",
         "test": "jest"
     },
     "keywords": [],

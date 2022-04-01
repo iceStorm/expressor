@@ -1,10 +1,8 @@
-import { Injectable, Service } from "core/decorators"
-import { InjectableScope } from "core/decorators/injectable.decorator"
-import UserStore from "modules/user/user.store"
+import { Injectable, Service } from "src/core/decorators"
+import { InjectableScope } from "src/core/decorators/injectable.decorator"
+import UserStore from "src/modules/user/user.store"
 
-@Injectable({
-    scope: InjectableScope.SINGLETON,
-})
+@Injectable()
 export default class AppService {
     constructor(private readonly userStore: UserStore) {}
 
