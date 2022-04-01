@@ -9,12 +9,6 @@ import { AppRoute } from "./http.decorator"
 export default function Controller(rootPath: string) {
     return function (target: any) {
         const routes = Reflect.getMetadata(DECORATOR_KEYS.ROUTES, target)
-
-        // appending router's root path to the child routes
-        routes.forEach(function (route: AppRoute) {
-            route.path = rootPath + route.path
-        })
-
         Reflect.defineMetadata(DECORATOR_KEYS.ROOT_PATH, rootPath, target)
     }
 }

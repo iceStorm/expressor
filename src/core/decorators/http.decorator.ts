@@ -7,7 +7,6 @@ export type AppRoute = {
     path: string
     httpMethod: HTTPMethod
     method: any
-    // string | symbol | Function(req: Request, res: Response, next: NextFunction): any
 }
 
 function HTTPMethodDecoratorFactory(method: HTTPMethod) {

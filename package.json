@@ -5,7 +5,8 @@
     "main": "src/main.ts",
     "scripts": {
         "start": "NODE_PATH=./ nodemon ./src/main.ts",
-        "test": "jest"
+        "test": "jest",
+        "debug": "NODE_PATH=./ nodemon --inspect ./src/main.ts"
     },
     "keywords": [],
     "author": "",

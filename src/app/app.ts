@@ -9,6 +9,7 @@ import AppModule from "src/app/app.module"
 import helmet from "helmet"
 import DECORATOR_KEYS from "src/core/decorators/constants"
 import { AppRoute, HTTPMethod } from "src/core/decorators/http.decorator"
+import UserModule from "src/modules/user/user.module"
 
 export type AppConstructor = {
     port: number | undefined
@@ -115,33 +116,36 @@ export default class App {
             }
         }
 
-        console.log(controllers)
+        console.info(controllers)
 
         // for logging routes table
         const routesMapTable: Array<{ path: string; function: string; method: HTTPMethod }> = []
-        const rootModuleInstance = new this.rootModule()
 
         // registering routers based on each controller
-        controllers.forEach((controller) => {
+        for (let index = 0; index < controllers.length; index++) {
+            const controller = controllers[index]
+
             const routerRootPath = Reflect.getMetadata(DECORATOR_KEYS.ROOT_PATH, controller)
             const routerHandlers = Reflect.getMetadata(DECORATOR_KEYS.ROUTES, controller)
             const router = express.Router()
 
-            routerHandlers.forEach((handler: AppRoute) => {
+            for (let index = 0; index < routerHandlers.length; index++) {
+                const handler = routerHandlers[index] as AppRoute
+
                 // binding router handler method for specific path
-                router[handler.httpMethod](handler.path, handler.method).bind(rootModuleInstance)
+                router[handler.httpMethod](handler.path, handler.method).bind(new controller())
 
                 routesMapTable.push({
-                    path: handler.path,
+                    path: routerRootPath + '' + handler.path,
                     function: `${controller.name}.${handler.method.name}`,
                     method: handler.httpMethod,
                 })
-            })
+            }
 
             // apply router as middleware
             console.log(routerRootPath)
             this._instance.use(routerRootPath, router)
-        })
+        }
 
         console.table(routesMapTable)
     }

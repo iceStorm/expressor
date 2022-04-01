@@ -1,0 +1,3 @@
+# GET http://localhost:7502/users
+
+POST http://localhost:7502/users/update
